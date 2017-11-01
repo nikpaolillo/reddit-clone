@@ -8,6 +8,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class PostTest extends TestCase
 {
+
+    use DatabaseMigrations;
+
     /** @test */
 
     public function post_determines_its_author() {
@@ -18,9 +21,26 @@ class PostTest extends TestCase
         'user_id' => $user->id
       ]);
 
+      $postByAnotherUser = factory(\App\Post::class)->create();
+
       $postByAuthor = $post->wasCreatedBy($user);
 
+      $postByAnotherAuthor = $postByAnotherUser->wasCreatedBy($user);
+
       $this->assertTrue($postByAuthor);
+      $this->assertFalse($postByAnotherAuthor);
+
+    }
+
+    /** @test */
+
+    public function post_determines_its_author_if_null_return_false() {
+
+      $post = factory(\App\Post::class)->create();
+
+      $postByAuthor = $post->wasCreatedBy(null);
+
+      $this->assertFalse($postByAuthor);
 
     }
 }

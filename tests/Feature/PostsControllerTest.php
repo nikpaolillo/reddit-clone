@@ -45,4 +45,24 @@ class PostsControllerTest extends TestCase
 
     }
 
+    /** @test */
+    public function it_sees_posts_author() {
+
+      $user = factory(\App\User::class)->create();
+
+      $this->userSignIn($user);
+
+      $posts = factory(\App\Post::class, 10)->create();
+
+      $response = $this->get(route('posts_path'));
+
+      $response->assertStatus(200);
+
+      foreach ($posts as $post) {
+        $response->assertSee($post->title);
+        $response->assertSee($post->user->name);
+      }
+
+    }
+
 }
